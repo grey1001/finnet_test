@@ -24,7 +24,7 @@ pipeline {
         stage('Plan') {
             steps {
                 script {
-                    dir("environments/${params.environment}") {
+                    dir("finnet_test/environments/${params.environment}") {
                         sh 'terraform init'
                         sh "terraform workspace select ${params.environment} "
                         sh 'terraform init'
