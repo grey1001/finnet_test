@@ -10,6 +10,7 @@ pipeline {
     }
 
     agent any
+    def plan
 
     stages {
         stage('Checkout') {
@@ -20,7 +21,7 @@ pipeline {
                 }
             }
         }
-
+   
         stage('Plan') {
             steps {
                 script {
@@ -37,7 +38,7 @@ pipeline {
                         sh 'terraform show -no-color tfplan > tfplan.txt'
                         
                         // Read the plan content
-                        def plan = readFile 'tfplan.txt'
+                        plan = readFile 'tfplan.txt'
                     }
                 }
             }
