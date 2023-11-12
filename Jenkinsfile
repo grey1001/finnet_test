@@ -29,10 +29,10 @@ pipeline {
                         sh 'terraform init'
                         
                         // Check if the workspace exists
-                        def workspaceExists = sh(script: 'terraform workspace list | grep ${params.environment}', returnStatus: true)
-                        
+                        def workspaceList = sh(script: 'terraform workspace list', returnStdout: true).trim()
+        
                         // If the workspace doesn't exist, create it
-                        if (workspaceExists != 0) {
+                        if (!workspaceList.contains(params.environment)) {
                             sh "terraform workspace new ${params.environment}"
                         }
                         
