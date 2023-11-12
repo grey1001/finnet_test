@@ -10,7 +10,7 @@ pipeline {
     }
 
     agent any
-    def plan
+    
 
     stages {
         stage('Checkout') {
@@ -22,6 +22,7 @@ pipeline {
             }
         }
        stage('Plan') {
+           def plan
             steps {
                 script {
                     sh 'pwd'
