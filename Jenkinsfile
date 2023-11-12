@@ -40,6 +40,7 @@ pipeline {
                         sh "terraform workspace select ${params.environment}"
                         
                         // Create a Terraform plan
+                        sh 'terraform init'
                         sh 'terraform plan -out tfplan'
                         
                         // Save the plan in a human-readable format
