@@ -26,6 +26,7 @@ pipeline {
             steps {
                 script {
                     dir("environments/${params.environment}") {
+                        sh 'terraform init -reconfigure'
                         // Check if the workspace exists
                         def workspaceExists = sh(script: "terraform workspace select ${params.environment}", returnStatus: true)
 
