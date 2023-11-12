@@ -21,6 +21,25 @@ pipeline {
                 }
             }
         }
+
+       stage('Initialize Workspace') {
+            steps {
+                script {
+                    dir("environments/${params.environment}") {
+                        // Check if the workspace exists
+                        def workspaceExists = sh(script: "terraform workspace select ${params.environment}", returnStatus: true)
+
+                        // If the workspace doesn't exist, create and select it
+                        if (workspaceExists != 0) {
+                            sh "terraform workspace new ${params.environment}"
+                            sh "terraform workspace select ${params.environment}"
+                        }
+                    }
+                }
+            }
+        }
+
+        
        stage('Plan') {
            
             steps {
