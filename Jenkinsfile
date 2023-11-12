@@ -25,6 +25,7 @@ pipeline {
         stage('Plan') {
             steps {
                 script {
+                    sh 'pwd'
                     // Move to the root of the repository
                     dir("finnet_test") {
                         // Move to the specific environment directory
