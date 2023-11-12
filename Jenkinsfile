@@ -25,7 +25,7 @@ pipeline {
             steps {
                 script {
                     // Move to the specific environment directory
-                    dir("finnet_test/environments/${params.environment}") {
+                    dir("environments/${params.environment}") {
                         // Initialize Terraform, forcing reconfiguration
                         sh 'terraform init -reconfigure'
                         
@@ -48,7 +48,7 @@ pipeline {
 
             steps {
                 script {
-                    def plan = readFile 'tfplan.txt'
+                    def plan = readFile 'environments/${params.environment}/tfplan.txt'
                     input message: 'Do you want to apply the plan?',
                           parameters: [text(name: 'Plan', description: 'Please review the plan', defaultValue: plan)]
                 }
@@ -58,7 +58,7 @@ pipeline {
         stage('Apply') {
             steps {
                 script {
-                    dir("finnet_test/environments/${params.environment}") {
+                    dir("environments/${params.environment}") {
                         sh 'terraform apply -input=false tfplan'
                     }
                 }
