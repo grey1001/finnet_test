@@ -2,7 +2,7 @@
 
 
 module "s3_auth" {
-  source = "../../modules/s3"
+  source = "../../module/s3"
   bucket_name = var.bucket_auth
   source_file = "./auth.html"
   key = "auth.html"
@@ -10,7 +10,7 @@ module "s3_auth" {
 }
 
 module "s3_info" {
-  source = "../../modules/s3"
+  source = "../../module/s3"
   bucket_name = var.bucket_info
   key = "info.html"
   source_file = "./info.html"
@@ -18,7 +18,7 @@ module "s3_info" {
 }
 
 module "s3_customers" {
-  source = "../../modules/s3"
+  source = "../../module/s3"
   bucket_name = var.bucket_customers
   key = "customers.html"
   source_file = "./customers.html"
