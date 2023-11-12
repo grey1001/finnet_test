@@ -29,18 +29,15 @@ pipeline {
                         sh 'terraform init'
                         
                         // Check if the workspace exists
-                        def workspaceList = sh(script: 'terraform workspace list', returnStdout: true).trim()
+                        def workspaceExists = sh(script: 'terraform workspace select ${params.environment}', returnStatus: true)
         
-                        // If the workspace doesn't exist, create it
-                        if (!workspaceList.contains(params.environment)) {
+                        // If the workspace doesn't exist, create and select it
+                        if (workspaceExists != 0) {
                             sh "terraform workspace new ${params.environment}"
+                            sh "terraform workspace select ${params.environment}"
                         }
                         
-                        // Select the Terraform workspace
-                        sh "terraform workspace select ${params.environment}"
-                        
                         // Create a Terraform plan
-                        sh 'terraform init'
                         sh 'terraform plan -out tfplan'
                         
                         // Save the plan in a human-readable format
@@ -49,6 +46,7 @@ pipeline {
                 }
             }
         }
+
 
 
         stage('Approval') {
