@@ -24,6 +24,7 @@ pipeline {
         stage('Plan') {
             steps {
                 script {
+                    sh 'pwd'
                     // Move to the specific environment directory
                     dir("environments/${params.environment}") {
                         // Initialize Terraform, forcing reconfiguration
