@@ -31,9 +31,13 @@ pipeline {
                         sh 'terraform init -reconfigure'
                         
                         // Create a Terraform plan
-                        sh 'terraform plan'
+                        sh 'terraform plan -out tfplan'
                         
-                      
+                        // Save the plan in a human-readable format
+                        sh 'terraform show -no-color tfplan > tfplan.txt'
+                        
+                        // Read the plan content
+                        def plan = readFile 'tfplan.txt'
                     }
                 }
             }
