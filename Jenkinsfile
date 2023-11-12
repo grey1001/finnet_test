@@ -27,7 +27,7 @@ pipeline {
                 script {
                     sh 'pwd'
                     // Move to the root of the repository
-                    dir("finnet_test") {
+                    dir("finnet_test/environments") {
                         // Move to the specific environment directory
                         dir("environments/${params.environment}") {
                             // Initialize Terraform, forcing reconfiguration
