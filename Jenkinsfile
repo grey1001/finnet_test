@@ -10,19 +10,17 @@ pipeline {
     }
 
     agent any
-    
 
     stages {
         stage('Checkout') {
             steps {
                 script {
-                    // Checkout the repository with the specific branch if needed
                     checkout([$class: 'GitSCM', branches: [[name: '*/master']], doGenerateSubmoduleConfigurations: false, extensions: [], submoduleCfg: [], userRemoteConfigs: [[url: 'https://github.com/grey1001/finnet_test.git']]])
                 }
             }
         }
 
-       stage('Initialize Workspace') {
+        stage('Initialize Workspace') {
             steps {
                 script {
                     dir("environments/${params.environment}") {
@@ -39,6 +37,7 @@ pipeline {
                 }
             }
         }
+
         stage('Destroy') {
             steps {
                 script {
@@ -50,58 +49,44 @@ pipeline {
                 }
             }
         }
-    
 
-        
-    //    stage('Plan') {
-           
-    //         steps {
-    //             script {
-    //                 sh 'pwd'
-    //                 // Move to the specific environment directory
-    //                 dir("environments/${params.environment}") {
-    //                     // Initialize Terraform, forcing reconfiguration
-    //                     sh 'terraform init -reconfigure'
-        
-    //                     // Create a Terraform plan
-    //                     sh 'terraform plan -out tfplan || true'  // Continue even if the plan step fails
-        
-    //                     // Save the plan in a human-readable format
-    //                     sh 'terraform show -no-color tfplan > tfplan.txt || true'  // Continue even if show step fails
-        
-    //                     // Read the plan content
-    //                     plan = readFile 'tfplan.txt'
-    //                 }
-    //             }
-    //         }
-    //     }
+        stage('Plan') {
+            steps {
+                script {
+                    sh 'pwd'
+                    dir("environments/${params.environment}") {
+                        sh 'terraform init -reconfigure'
+                        sh 'terraform plan -out tfplan || true'
+                        sh 'terraform show -no-color tfplan > tfplan.txt || true'
+                        plan = readFile 'tfplan.txt'
+                    }
+                }
+            }
+        }
 
+        stage('Approval') {
+            when {
+                not {
+                    equals expected: true, actual: params.autoApprove
+                }
+            }
 
-    //     stage('Approval') {
-    //         when {
-    //             not {
-    //                 equals expected: true, actual: params.autoApprove
-    //             }
-    //         }
+            steps {
+                script {
+                    input message: 'Do you want to apply the plan?',
+                          parameters: [text(name: 'Plan', description: 'Please review the plan', defaultValue: plan)]
+                }
+            }
+        }
 
-    //         steps {
-    //             script {
-                    
-    //                 input message: 'Do you want to apply the plan?',
-    //                       parameters: [text(name: 'Plan', description: 'Please review the plan', defaultValue: plan)]
-    //             }
-    //         }
-    //     }
-
-    //     stage('Apply') {
-    //         steps {
-    //             script {
-    //                 dir("environments/${params.environment}") {
-    //                     sh 'terraform apply -input=false tfplan'
-    //                 }
-    //             }
-    //         }
-    //     }
-    // }
-// }
-// }
+        stage('Apply') {
+            steps {
+                script {
+                    dir("environments/${params.environment}") {
+                        sh 'terraform apply -input=false tfplan'
+                    }
+                }
+            }
+        }
+    }
+}
