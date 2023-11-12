@@ -50,43 +50,43 @@ pipeline {
             }
         }
 
-//         stage('Plan') {
-//             steps {
-//                 script {
-//                     sh 'pwd'
-//                     dir("environments/${params.environment}") {
-//                         sh 'terraform init -reconfigure'
-//                         sh 'terraform plan -out tfplan || true'
-//                         sh 'terraform show -no-color tfplan > tfplan.txt || true'
-//                         plan = readFile 'tfplan.txt'
-//                     }
-//                 }
-//             }
-//         }
+        stage('Plan') {
+            steps {
+                script {
+                    sh 'pwd'
+                    dir("environments/${params.environment}") {
+                        sh 'terraform init -reconfigure'
+                        sh 'terraform plan -out tfplan || true'
+                        sh 'terraform show -no-color tfplan > tfplan.txt || true'
+                        plan = readFile 'tfplan.txt'
+                    }
+                }
+            }
+        }
 
-//         stage('Approval') {
-//             when {
-//                 not {
-//                     equals expected: true, actual: params.autoApprove
-//                 }
-//             }
+        stage('Approval') {
+            when {
+                not {
+                    equals expected: true, actual: params.autoApprove
+                }
+            }
 
-//             steps {
-//                 script {
-//                     input message: 'Do you want to apply the plan?',
-//                           parameters: [text(name: 'Plan', description: 'Please review the plan', defaultValue: plan)]
-//                 }
-//             }
-//         }
+            steps {
+                script {
+                    input message: 'Do you want to apply the plan?',
+                          parameters: [text(name: 'Plan', description: 'Please review the plan', defaultValue: plan)]
+                }
+            }
+        }
 
-//         stage('Apply') {
-//             steps {
-//                 script {
-//                     dir("environments/${params.environment}") {
-//                         sh 'terraform apply -input=false tfplan'
-//                     }
-//                 }
-//             }
-//         }
-//     }
-// }
+        stage('Apply') {
+            steps {
+                script {
+                    dir("environments/${params.environment}") {
+                        sh 'terraform apply -input=false tfplan'
+                    }
+                }
+            }
+        }
+    }
+}
