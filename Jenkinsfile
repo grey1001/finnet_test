@@ -22,7 +22,7 @@ pipeline {
             }
         }
        stage('Plan') {
-           def plan
+           
             steps {
                 script {
                     sh 'pwd'
