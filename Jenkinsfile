@@ -31,7 +31,7 @@ pipeline {
                         sh 'terraform init -reconfigure'
                         
                         // Create a Terraform plan
-                        sh 'terraform plan -out tfplan'
+                        sh 'terraform plan'
                         
                       
                     }
