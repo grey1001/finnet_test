@@ -39,56 +39,68 @@ pipeline {
                 }
             }
         }
-
-        
-       stage('Plan') {
-           
+        stage('Destroy') {
             steps {
                 script {
-                    sh 'pwd'
-                    // Move to the specific environment directory
+                    checkout([$class: 'GitSCM', branches: [[name: '*/master']], doGenerateSubmoduleConfigurations: false, extensions: [], submoduleCfg: [], userRemoteConfigs: [[url: 'https://github.com/grey1001/finnet_test.git']]])
                     dir("environments/${params.environment}") {
-                        // Initialize Terraform, forcing reconfiguration
                         sh 'terraform init -reconfigure'
-        
-                        // Create a Terraform plan
-                        sh 'terraform plan -out tfplan || true'  // Continue even if the plan step fails
-        
-                        // Save the plan in a human-readable format
-                        sh 'terraform show -no-color tfplan > tfplan.txt || true'  // Continue even if show step fails
-        
-                        // Read the plan content
-                        plan = readFile 'tfplan.txt'
+                        sh 'terraform destroy -auto-approve'
                     }
                 }
             }
         }
+    
+
+        
+    //    stage('Plan') {
+           
+    //         steps {
+    //             script {
+    //                 sh 'pwd'
+    //                 // Move to the specific environment directory
+    //                 dir("environments/${params.environment}") {
+    //                     // Initialize Terraform, forcing reconfiguration
+    //                     sh 'terraform init -reconfigure'
+        
+    //                     // Create a Terraform plan
+    //                     sh 'terraform plan -out tfplan || true'  // Continue even if the plan step fails
+        
+    //                     // Save the plan in a human-readable format
+    //                     sh 'terraform show -no-color tfplan > tfplan.txt || true'  // Continue even if show step fails
+        
+    //                     // Read the plan content
+    //                     plan = readFile 'tfplan.txt'
+    //                 }
+    //             }
+    //         }
+    //     }
 
 
-        stage('Approval') {
-            when {
-                not {
-                    equals expected: true, actual: params.autoApprove
-                }
-            }
+    //     stage('Approval') {
+    //         when {
+    //             not {
+    //                 equals expected: true, actual: params.autoApprove
+    //             }
+    //         }
 
-            steps {
-                script {
+    //         steps {
+    //             script {
                     
-                    input message: 'Do you want to apply the plan?',
-                          parameters: [text(name: 'Plan', description: 'Please review the plan', defaultValue: plan)]
-                }
-            }
-        }
+    //                 input message: 'Do you want to apply the plan?',
+    //                       parameters: [text(name: 'Plan', description: 'Please review the plan', defaultValue: plan)]
+    //             }
+    //         }
+    //     }
 
-        stage('Apply') {
-            steps {
-                script {
-                    dir("environments/${params.environment}") {
-                        sh 'terraform apply -input=false tfplan'
-                    }
-                }
-            }
-        }
-    }
+    //     stage('Apply') {
+    //         steps {
+    //             script {
+    //                 dir("environments/${params.environment}") {
+    //                     sh 'terraform apply -input=false tfplan'
+    //                 }
+    //             }
+    //         }
+    //     }
+    // }
 }
