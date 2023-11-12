@@ -14,7 +14,7 @@ pipeline {
         stage('checkout') {
             steps {
                 script {
-                    git "https://github.com/yeshwanthlm/Terraform-Jenkins.git"
+                    git "https://github.com/grey1001/finnet_test.git"
                     // Optionally switch to a specific branch if needed
                     // sh 'git checkout your_branch_name'
                 }
