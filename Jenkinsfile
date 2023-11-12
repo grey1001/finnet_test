@@ -26,7 +26,7 @@ pipeline {
                 script {
                     dir("environments/${params.environment}") {
                         sh 'terraform init'
-                        sh 'terraform workspace new dev
+                        sh 'terraform workspace new dev'
                         sh "terraform workspace select ${params.environment} "
                         sh 'terraform plan -out tfplan'
                         sh 'terraform show -no-color tfplan > tfplan.txt'
