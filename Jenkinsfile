@@ -25,15 +25,30 @@ pipeline {
             steps {
                 script {
                     dir("finnet_test/environments/${params.environment}") {
+                        // Initialize Terraform
                         sh 'terraform init'
-                        sh "terraform workspace select ${params.environment} "
-                        sh 'terraform init'
+                        
+                        // Check if the workspace exists
+                        def workspaceExists = sh(script: 'terraform workspace list | grep ${params.environment}', returnStatus: true)
+                        
+                        // If the workspace doesn't exist, create it
+                        if (workspaceExists != 0) {
+                            sh "terraform workspace new ${params.environment}"
+                        }
+                        
+                        // Select the Terraform workspace
+                        sh "terraform workspace select ${params.environment}"
+                        
+                        // Create a Terraform plan
                         sh 'terraform plan -out tfplan'
+                        
+                        // Save the plan in a human-readable format
                         sh 'terraform show -no-color tfplan > tfplan.txt'
                     }
                 }
             }
         }
+
 
         stage('Approval') {
             when {
