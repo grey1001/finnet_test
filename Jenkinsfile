@@ -38,17 +38,17 @@ pipeline {
             }
         }
 
-        stage('Destroy') {
-            steps {
-                script {
-                    checkout([$class: 'GitSCM', branches: [[name: '*/master']], doGenerateSubmoduleConfigurations: false, extensions: [], submoduleCfg: [], userRemoteConfigs: [[url: 'https://github.com/grey1001/finnet_test.git']]])
-                    dir("environments/${params.environment}") {
-                        sh 'terraform init -reconfigure'
-                        sh 'terraform destroy -auto-approve'
-                    }
-                }
-            }
-        }
+        // stage('Destroy') {
+        //     steps {
+        //         script {
+        //             checkout([$class: 'GitSCM', branches: [[name: '*/master']], doGenerateSubmoduleConfigurations: false, extensions: [], submoduleCfg: [], userRemoteConfigs: [[url: 'https://github.com/grey1001/finnet_test.git']]])
+        //             dir("environments/${params.environment}") {
+        //                 sh 'terraform init -reconfigure'
+        //                 sh 'terraform destroy -auto-approve'
+        //             }
+        //         }
+        //     }
+        // }
 
         stage('Plan') {
             steps {
