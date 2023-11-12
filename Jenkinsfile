@@ -21,31 +21,37 @@ pipeline {
             }
         }
 
+        // Inside the 'Plan' stage
         stage('Plan') {
             steps {
                 script {
-                    dir("finnet_test/environments/${params.environment}") {
-                        // Initialize Terraform
-                        sh 'terraform init'
-                        
-                        // Check if the workspace exists
-                        def workspaceExists = sh(script: 'terraform workspace select ${params.environment}', returnStatus: true)
+                    // Move to the root of the repository
+                    dir("finnet_test") {
+                        // Move to the specific environment directory
+                        dir("environments/${params.environment}") {
+                            // Initialize Terraform
+                            sh 'terraform init'
+                            
+                            // Check if the workspace exists
+                            def workspaceExists = sh(script: 'terraform workspace select ${params.environment}', returnStatus: true)
         
-                        // If the workspace doesn't exist, create and select it
-                        if (workspaceExists != 0) {
-                            sh "terraform workspace new ${params.environment}"
-                            sh "terraform workspace select ${params.environment}"
+                            // If the workspace doesn't exist, create and select it
+                            if (workspaceExists != 0) {
+                                sh "terraform workspace new ${params.environment}"
+                                sh "terraform workspace select ${params.environment}"
+                            }
+                            
+                            // Create a Terraform plan
+                            sh 'terraform plan -out tfplan'
+                            
+                            // Save the plan in a human-readable format
+                            sh 'terraform show -no-color tfplan > tfplan.txt'
                         }
-                        
-                        // Create a Terraform plan
-                        sh 'terraform plan -out tfplan'
-                        
-                        // Save the plan in a human-readable format
-                        sh 'terraform show -no-color tfplan > tfplan.txt'
                     }
                 }
             }
         }
+
 
 
 
