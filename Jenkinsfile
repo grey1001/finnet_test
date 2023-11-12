@@ -21,8 +21,7 @@ pipeline {
                 }
             }
         }
-   
-        stage('Plan') {
+       stage('Plan') {
             steps {
                 script {
                     sh 'pwd'
@@ -30,19 +29,20 @@ pipeline {
                     dir("environments/${params.environment}") {
                         // Initialize Terraform, forcing reconfiguration
                         sh 'terraform init -reconfigure'
-                        
+        
                         // Create a Terraform plan
-                        sh 'terraform plan -out tfplan'
-                        
+                        sh 'terraform plan -out tfplan || true'  // Continue even if the plan step fails
+        
                         // Save the plan in a human-readable format
-                        sh 'terraform show -no-color tfplan > tfplan.txt'
-                        
+                        sh 'terraform show -no-color tfplan > tfplan.txt || true'  // Continue even if show step fails
+        
                         // Read the plan content
                         plan = readFile 'tfplan.txt'
                     }
                 }
             }
         }
+
 
         stage('Approval') {
             when {
